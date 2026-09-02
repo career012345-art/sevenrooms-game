@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7번방의 기록 — 자동 테스트</title>
+<style>
+  body { font-family: "Malgun Gothic", sans-serif; background: #14162b; color: #eee;
+         max-width: 720px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 1.3rem; }
+  .summary { padding: 16px 20px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; margin: 16px 0; }
+  .ok   { background: #103d24; color: #4ade80; border: 1px solid #4ade80; }
+  .fail { background: #431418; color: #f87171; border: 1px solid #f87171; }
+  .item { padding: 8px 12px; border-bottom: 1px solid #2a2d4a; font-size: .95rem; }
+  .item.bad { color: #f87171; }
+  .err { color: #fca5a5; font-size: .85rem; padding-left: 28px; white-space: pre-wrap; }
+  .hint { color: #9ca3af; font-size: .85rem; margin-top: 20px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <h1>🧪 7번방의 기록 — 자동 테스트</h1>
+  <div id="summary" class="summary">테스트 실행 중...</div>
+  <div id="list"></div>
+  <p class="hint">
+    content.js(문항 파일)를 수정한 뒤에는 이 페이지를 새로고침해서
+    <b>초록색 "모든 테스트 통과"</b>가 나오는지 꼭 확인하세요.<br>
+    빨간색이 나오면 어떤 항목이 잘못됐는지 위 목록에 표시됩니다.
+  </p>
+
+  <script src="content.js?v=2.2.1"></script>
+  <script src="engine.js?v=2.2.1"></script>
+  <script src="tests.js?v=2.2.1"></script>
+  <script>
+    (function () {
+      var t = window.TEST_RESULTS;
+      var summary = document.getElementById("summary");
+      var list = document.getElementById("list");
+      if (!t) {
+        summary.className = "summary fail";
+        summary.textContent = "❌ 테스트를 실행하지 못했습니다. content.js 또는 engine.js 파일 오류를 확인하세요.";
+        return;
+      }
+      if (t.failed === 0) {
+        summary.className = "summary ok";
+        summary.textContent = "✅ 모든 테스트 통과 (" + t.passed + "개) — 게임을 배포해도 안전합니다!";
+      } else {
+        summary.className = "summary fail";
+        summary.textContent = "❌ 실패 " + t.failed + "개 / 전체 " + t.results.length + "개 — 아래 빨간 항목을 확인하세요.";
+      }
+      t.results.forEach(function (r) {
+        var div = document.createElement("div");
+        div.className = "item" + (r.pass ? "" : " bad");
+        div.textContent = (r.pass ? "✅ " : "❌ ") + r.name;
+        if (r.error) {
+          var err = document.createElement("div");
+          err.className = "err";
+          err.textContent = "→ " + r.error;
+          div.appendChild(err);
+        }
+        list.appendChild(div);
+      });
+    })();
+  </script>
+</body>
+</html>
