@@ -29,7 +29,7 @@ window.GAME_CONTENT = {
   meta: {
     title: "7번방의 기록",
     subtitle: "나를 찾는 7개의 방",
-    version: "3.1.0"
+    version: "3.1.1"
   },
 
   settings: {

@@ -657,13 +657,12 @@
     };
   }
 
-  /* ---------- 기업 카드 (DART 공시 요약 — 서버 프록시 경유) ---------- */
+  /* ---------- 기업 카드 (DART 공시 요약 — 내장 정적 파일) ---------- */
   function fetchCompanyCard(corpCode, cb) {
-    var url = C.settings.sheetEndpoint;
-    if (!url || !corpCode) { cb(null); return; }
+    if (!corpCode) { cb(null); return; }
     try {
-      fetch(url + "?action=corp&code=" + corpCode)
-        .then(function (r) { return r.json(); })
+      fetch("corp/" + corpCode + ".json")
+        .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (d) { cb(d && !d.error ? d : null); })
         .catch(function () { cb(null); });
     } catch (e) { cb(null); }
