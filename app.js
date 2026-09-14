@@ -1522,14 +1522,21 @@
       registerEpisode();
       if (E.scoreAnswer(q, a, C.settings).answered) delete state.skipped[q.id];
       saveState();
-      // ★ 답변을 기록할 때마다 그 방의 최신 상태를 시트로 즉시 전송
-      //   (중간에 그만둬도 여기까지의 답변이 시트에 남음. 서버가 중복은 정리함)
-      var room = currentRoom();
-      var partial = E.scoreRoom(room, state.answers, C.settings);
-      var doneCnt = room.questions.filter(isAnswered).length;
-      sendToSheet(buildRoomPayload(room, partial,
-        "진행 중 (" + room.title + " " + doneCnt + "/" + room.questions.length + ")"));
-      retryPending();
+      // ★ 답변 저장 시 방의 최신 상태를 시트로 전송하되,
+      //   동시 접속(단체 진행)에 대비해 1인당 일정 간격으로만 전송 (스로틀)
+      //   — 매번 방 전체 답변을 다시 보내므로 건너뛴 전송분도 다음 전송이 만회함
+      var throttleMs = (C.settings.sendThrottleSec || 45) * 1000;
+      var now = Date.now();
+      if (!state._lastSend || now - state._lastSend >= throttleMs) {
+        state._lastSend = now;
+        var room = currentRoom();
+        var partial = E.scoreRoom(room, state.answers, C.settings);
+        var doneCnt = room.questions.filter(isAnswered).length;
+        sendToSheet(buildRoomPayload(room, partial,
+          "진행 중 (" + room.title + " " + doneCnt + "/" + room.questions.length + ")"));
+        retryPending();
+      }
+      saveState();
       closeSheet();
       renderRoom(); // 아이템 표시 갱신
     }
@@ -1574,6 +1581,7 @@
     var room = currentRoom();
     var result = E.scoreRoom(room, state.answers, C.settings);
     state.clearedRooms[room.id] = result;
+    state._lastSend = Date.now();   // 방 클리어는 스로틀과 무관하게 항상 전송
     sendToSheet(buildRoomPayload(room, result, "진행 중 (" + room.title + " 클리어)"));
     retryPending();
     state.screen = "roomResult";

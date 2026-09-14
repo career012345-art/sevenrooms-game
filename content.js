@@ -29,7 +29,7 @@ window.GAME_CONTENT = {
   meta: {
     title: "7번방의 기록",
     subtitle: "나를 찾는 7개의 방",
-    version: "3.1.1"
+    version: "3.2.0"
   },
 
   settings: {
@@ -39,6 +39,8 @@ window.GAME_CONTENT = {
 
     badgeThresholdPercent: 60,  // 방 점수가 이 % 이상이면 배지 획득
     truthRoomMinBadges: 3,      // 배지가 이 개수 "미만"이면 진실의 방 대상
+    sendThrottleSec: 45,        // 답변 저장 전송 최소 간격(초) — 단체 동시 진행 대비
+                                // (방 클리어·최종 결과는 간격과 무관하게 항상 전송)
 
     // ---- 한글 인식 기준 (낙서·도배 차단) ----
     minHangulSyllables: 5,      // 서술형(text/episode): 완성 한글 5자 이상
